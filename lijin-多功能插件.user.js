@@ -2556,7 +2556,17 @@ function initAutoUpdate() {
     }
     
     function checkForUpdates(showNoUpdate = false) {
-        const currentVersion = GM_info.script.version || '6.1.0';
+        let currentVersion = '6.1.0';
+        if (typeof GM_info !== 'undefined' && GM_info.script && GM_info.script.version) {
+            currentVersion = GM_info.script.version;
+        } else {
+            const script = document.querySelector('script[src*="baidu-mark"], script[src*="多功能插件"]');
+            if (script) {
+                const match = script.src.match(/v(\d+\.\d+\.\d+)/);
+                if (match) currentVersion = match[1];
+            }
+        }
+        console.log(`🔍 检查更新 - 当前版本: ${currentVersion}`);
         
         try {
             GM_xmlhttpRequest({
@@ -2565,6 +2575,7 @@ function initAutoUpdate() {
                 timeout: 10000,
                 onload: function(response) {
                     try {
+                        console.log(`📥 收到更新数据: ${response.responseText.substring(0, 100)}...`);
                         const updateData = JSON.parse(response.responseText);
                         
                         if (!updateData.version) {
@@ -2572,7 +2583,9 @@ function initAutoUpdate() {
                             return;
                         }
                         
+                        console.log(`📊 当前版本: ${currentVersion}, 最新版本: ${updateData.version}`);
                         const comparison = compareVersions(currentVersion, updateData.version);
+                        console.log(`📈 版本比较结果: ${comparison}`);
                         
                         if (comparison < 0) {
                             console.log(`🔄 发现新版本：${updateData.version}`);
