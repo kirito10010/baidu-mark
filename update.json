@@ -1,5 +1,5 @@
 {
     "version": "6.1.2",
-    "downloadUrl": "https://raw.githubusercontent.com/kirito10010/baidu-mark/main/lijin-%E5%A4%9A%E5%8A%9F%E8%83%BD%E6%8F%92%E4%BB%B6.user.js",
+    "downloadUrl": "https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-%E5%A4%9A%E5%8A%9F%E8%83%BD%E6%8F%92%E4%BB%B6.user.js",
     "changelog": "【修复】质检打回后特殊属性框导致的 TypeError: Cannot read properties of undefined (reading 'top') 错误\n【优化】高亮框绘制增加多重安全防护（有效点过滤、SVG边界异常处理、viewBox空值防护）"
 }

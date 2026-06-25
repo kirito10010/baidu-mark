@@ -11,8 +11,8 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_openInTab
 // @run-at       document-start
-// @updateURL    https://raw.githubusercontent.com/kirito10010/baidu-mark/main/update.json
-// @downloadURL  https://raw.githubusercontent.com/kirito10010/baidu-mark/main/lijin-多功能插件.user.js
+// @updateURL    https://raw.githubusercontent.com/kirito10010/baidu-mark/master/update.json
+// @downloadURL  https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-多功能插件.user.js
 // ==/UserScript==
 
 /*
@@ -2465,7 +2465,7 @@
 
 function initAutoUpdate() {
     const UPDATE_CHECK_INTERVAL = 24 * 60 * 60 * 1000;
-    const UPDATE_JSON_URL = 'https://raw.githubusercontent.com/yourusername/yourrepo/main/update.json';
+    const UPDATE_JSON_URL = 'https://raw.githubusercontent.com/kirito10010/baidu-mark/master/update.json';
     
     function compareVersions(v1, v2) {
         const parts1 = v1.split('.').map(Number);
