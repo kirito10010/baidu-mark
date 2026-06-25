@@ -1,5 +1,5 @@
 {
-    "version": "6.1.6",
-    "downloadUrl": "https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-%E5%A4%9A%E5%8A%9F%E8%83%BD%E6%8F%92%E4%BB%B6.user.js",
-    "changelog": "【新增】联网更新功能,不用手动导入\n【新增】快捷键Ctrl+Shift+Alt+U检查更新"
+    "version": "1.0.0",
+    "downloadUrl": "https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.js",
+    "changelog": "【首发】样本标注系统增强工具 v1.0.0"
 }
