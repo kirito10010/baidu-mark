@@ -1,5 +1,5 @@
 {
-    "version": "6.1.5",
+    "version": "6.1.6",
     "downloadUrl": "https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-%E5%A4%9A%E5%8A%9F%E8%83%BD%E6%8F%92%E4%BB%B6.user.js",
-    "changelog": "【修复】质检框漏标框后打回作业员打开出错的问题"
+    "changelog": "【测试】更新功能测试"
 }
