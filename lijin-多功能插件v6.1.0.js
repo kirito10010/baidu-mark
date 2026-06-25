@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         样本标注系统增强工具
 // @namespace    http://tampermonkey.net/
-// @version      6.1.0
+// @version      6.1.1
 // @description  UI优化、多主题切换、十字参考线、右键拖动图片、实时时间、自动正方形框、快捷键修改、标签显示、自动更新
 // @author       lijin
 // @match        http://10.212.80.215:8901/sample/*
@@ -11,8 +11,8 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_openInTab
 // @run-at       document-start
-// @updateURL    https://raw.githubusercontent.com/yourusername/yourrepo/main/update.json
-// @downloadURL  https://raw.githubusercontent.com/yourusername/yourrepo/main/lijin-多功能插件.user.js
+// @updateURL    https://raw.githubusercontent.com/kirito10010/baidu-mark/main/update.json
+// @downloadURL  https://raw.githubusercontent.com/kirito10010/baidu-mark/main/lijin-多功能插件.user.js
 // ==/UserScript==
 
 /*
@@ -42,6 +42,12 @@
  * 
  * 🏷️ 标签显示：
  *    Ctrl + Shift + Alt + L  切换标签显示面板
+ * 
+ * 🔄 检查更新：
+ *    Ctrl + Shift + Alt + U  手动检查更新
+ * 
+ * 💡 标签高亮：
+ *    鼠标悬停标签列表中的项目 → 在图片上高亮显示对应标注框
  * 
  * ========================================
  */
@@ -2460,7 +2466,7 @@ function initAutoUpdate() {
         return 0;
     }
     
-    function showUpdateNotification(version, changelog) {
+    function showUpdateNotification(version, changelog, downloadUrl) {
         const existingNotification = document.getElementById('update-notification');
         if (existingNotification) {
             existingNotification.remove();
@@ -2490,7 +2496,7 @@ function initAutoUpdate() {
                     to { transform: translateX(0); opacity: 1; }
                 }
                 #update-notification .update-title { font-weight: bold; font-size: 16px; margin-bottom: 8px; }
-                #update-notification .update-changelog { margin-bottom: 12px; opacity: 0.9; }
+                #update-notification .update-changelog { margin-bottom: 12px; opacity: 0.9; white-space: pre-line; }
                 #update-notification .update-btn {
                     display: inline-block;
                     background: white;
@@ -2517,8 +2523,8 @@ function initAutoUpdate() {
                 #update-notification .update-close:hover { opacity: 1; }
             </style>
             <div class="update-title">🚀 插件更新可用！</div>
-            <div class="update-changelog">版本 ${version} 已发布：<br>${changelog}</div>
-            <a href="https://github.com/yourusername/yourrepo" target="_blank" class="update-btn">立即更新</a>
+            <div class="update-changelog">版本 v${version} 已发布：\n${changelog}</div>
+            <a href="${downloadUrl || 'https://github.com/kirito10010/baidu-mark'}" target="_blank" class="update-btn">立即更新</a>
             <div class="update-close">×</div>
         `;
         
@@ -2556,7 +2562,7 @@ function initAutoUpdate() {
                         
                         if (comparison < 0) {
                             console.log(`🔄 发现新版本：${updateData.version}`);
-                            showUpdateNotification(updateData.version, updateData.changelog || '');
+                            showUpdateNotification(updateData.version, updateData.changelog || '', updateData.downloadUrl);
                         } else if (showNoUpdate) {
                             console.log('✅ 当前已是最新版本');
                             alert('✅ 当前已是最新版本 v' + currentVersion);
