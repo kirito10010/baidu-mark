@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         样本标注系统增强工具
 // @namespace    http://tampermonkey.net/
-// @version      6.1.1
+// @version      6.1.2
 // @description  UI优化、多主题切换、十字参考线、右键拖动图片、实时时间、自动正方形框、快捷键修改、标签显示、自动更新
 // @author       lijin
 // @match        http://10.212.80.215:8901/sample/*
@@ -2104,12 +2104,15 @@
             backgroundColor = '#FF0000';
         }
         
+        const validPoints = points.filter(p => p && typeof p.x === 'number' && typeof p.y === 'number');
+        if (validPoints.length < 3) return;
+        
         const insetPixels = 15;
         
-        const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
-        const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+        const centerX = validPoints.reduce((sum, p) => sum + p.x, 0) / validPoints.length;
+        const centerY = validPoints.reduce((sum, p) => sum + p.y, 0) / validPoints.length;
         
-        const insetPoints = points.map(p => {
+        const insetPoints = validPoints.map(p => {
             const dx = p.x - centerX;
             const dy = p.y - centerY;
             const distance = Math.sqrt(dx * dx + dy * dy);
@@ -2122,10 +2125,22 @@
             };
         });
         
-        const rect = svg.getBoundingClientRect();
-        const viewBox = svg.viewBox.baseVal;
-        const scaleX = viewBox ? viewBox.width / rect.width : 1;
-        const scaleY = viewBox ? viewBox.height / rect.height : 1;
+        let rect;
+        try {
+            rect = svg.getBoundingClientRect();
+        } catch (e) {
+            console.warn('⚠️ 获取SVG边界失败:', e);
+            return;
+        }
+        
+        if (!rect || typeof rect.top !== 'number') {
+            console.warn('⚠️ SVG边界数据无效');
+            return;
+        }
+        
+        const viewBox = svg.viewBox ? svg.viewBox.baseVal : null;
+        const scaleX = viewBox && rect.width > 0 ? viewBox.width / rect.width : 1;
+        const scaleY = viewBox && rect.height > 0 ? viewBox.height / rect.height : 1;
         
         const clientInsetPoints = insetPoints.map(p => ({
             x: (p.x / scaleX),
