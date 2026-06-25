@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         样本标注系统增强工具
 // @namespace    http://tampermonkey.net/
-// @version      6.1.3
+// @version      6.1.5
 // @description  UI优化、多主题切换、十字参考线、右键拖动图片、实时时间、自动正方形框、快捷键修改、标签显示、自动更新
 // @author       lijin
 // @match        http://10.212.80.215:8901/sample/*
@@ -2556,8 +2556,7 @@ function initAutoUpdate() {
     }
     
     function checkForUpdates(showNoUpdate = false) {
-        const script = document.querySelector('script[src*="baidu-mark"], script[src*="多功能插件"]');
-        const currentVersion = script ? (script.src.match(/v(\d+\.\d+\.\d+)/)?.[1] || '6.1.0') : '6.1.0';
+        const currentVersion = GM_info.script.version || '6.1.0';
         
         try {
             GM_xmlhttpRequest({
