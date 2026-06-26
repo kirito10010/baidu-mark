@@ -1,5 +1,5 @@
 {
     "version": "1.0.4",
     "downloadUrl": "https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.js",
-    "changelog": "【测试】测试自动更新功能"
+    "changelog": "【修复】修复更新下载问题，优化更新通知"
 }
