@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "downloadUrl": "https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.js",
-    "changelog": "【首发】样本标注系统增强工具 v1.0.0"
+    "changelog": "【修复】修复跨域警告、每次激活检测更新、taskFlowList=2时禁用快捷键拦截"
 }
