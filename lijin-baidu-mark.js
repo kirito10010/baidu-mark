@@ -10,6 +10,8 @@
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
 // @grant        GM_openInTab
+// @connect      10.212.80.215
+// @connect      raw.githubusercontent.com
 // @run-at       document-start
 // @updateURL    https://raw.githubusercontent.com/kirito10010/baidu-mark/master/update.json
 // @downloadURL  https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.js
