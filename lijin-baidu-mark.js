@@ -14,8 +14,8 @@
 // @connect      raw.githubusercontent.com
 // @connect      github.com
 // @run-at       document-start
-// @updateURL    https://github.com/kirito10010/baidu-mark/raw/master/lijin-baidu-mark.js
-// @downloadURL  https://github.com/kirito10010/baidu-mark/raw/master/lijin-baidu-mark.js
+// @updateURL    https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.js
+// @downloadURL  https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.js
 // ==/UserScript==
 
 /*
@@ -2475,7 +2475,7 @@
 
 function initAutoUpdate() {
     const UPDATE_CHECK_INTERVAL = 24 * 60 * 60 * 1000;
-    const UPDATE_JSON_URL = 'https://github.com/kirito10010/baidu-mark/raw/master/update.json';
+    const UPDATE_JSON_URL = 'https://raw.githubusercontent.com/kirito10010/baidu-mark/master/update.json';
     
     function compareVersions(v1, v2) {
         const parts1 = v1.split('.').map(Number);
@@ -2531,7 +2531,7 @@ function initAutoUpdate() {
                     font-weight: bold;
                     cursor: pointer;
                     transition: all 0.2s;
-                    text-decoration: none;
+                    border: none;
                 }
                 #update-notification .update-btn:hover {
                     background: #f0f0f0;
@@ -2549,9 +2549,14 @@ function initAutoUpdate() {
             </style>
             <div class="update-title">🚀 插件更新可用！</div>
             <div class="update-changelog">版本 v${version} 已发布：\n${changelog}</div>
-            <a href="${downloadUrl || 'https://github.com/kirito10010/baidu-mark'}" target="_blank" class="update-btn">立即更新</a>
+            <button class="update-btn">立即更新</button>
             <div class="update-close">×</div>
         `;
+        
+        notification.querySelector('.update-btn').addEventListener('click', () => {
+            const url = downloadUrl || 'https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.js';
+            GM_openInTab(url, { active: true });
+        });
         
         notification.querySelector('.update-close').addEventListener('click', () => {
             notification.remove();
