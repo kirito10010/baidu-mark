@@ -2607,7 +2607,6 @@ function initAutoUpdate() {
                             showUpdateNotification(updateData.version, updateData.changelog || '', updateData.downloadUrl);
                         } else if (showNoUpdate) {
                             console.log('✅ 当前已是最新版本');
-                            alert('✅ 当前已是最新版本 v' + currentVersion);
                         } else {
                             console.log('✅ 当前已是最新版本');
                         }
@@ -2617,9 +2616,6 @@ function initAutoUpdate() {
                 },
                 onerror: function(error) {
                     console.log('❌ 更新检查失败：网络错误', error);
-                    if (showNoUpdate) {
-                        alert('❌ 更新检查失败，请检查网络连接');
-                    }
                 }
             });
         } catch (e) {
