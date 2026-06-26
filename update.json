@@ -1,5 +1,5 @@
 {
-    "version": "1.0.5",
+    "version": "1.0.1",
     "downloadUrl": "https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.user.js",
-    "changelog": "【修复】使用.user.js后缀，修复更新下载问题"
+    "changelog": "【修复】修复更新提示不弹出问题，等待DOM加载完成后再检查更新"
 }
