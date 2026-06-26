@@ -1328,6 +1328,13 @@
     let originalShortcuts = {};
     let platformOriginalShortcuts = GM_getValue('platformOriginalShortcuts', null);
     let shortcutInterceptionEnabled = GM_getValue('shortcutInterceptionEnabled', true);
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const taskFlowList = urlParams.get('taskFlowList');
+    if (taskFlowList === '2') {
+        shortcutInterceptionEnabled = false;
+        console.log('📋 taskFlowList=2，快捷键拦截已禁用');
+    }
 
     function createShortcutModal() {
         const modalOverlay = document.createElement('div');
@@ -2621,13 +2628,5 @@ function initAutoUpdate() {
         }
     });
     
-    const lastCheckTime = GM_getValue('lastUpdateCheckTime', 0);
-    const now = Date.now();
-    
-    if (now - lastCheckTime > UPDATE_CHECK_INTERVAL) {
-        checkForUpdates();
-        GM_setValue('lastUpdateCheckTime', now);
-    } else {
-        console.log('⏰ 更新检查已在近期执行，跳过');
-    }
+    checkForUpdates();
 }
