@@ -14,8 +14,8 @@
 // @connect      raw.githubusercontent.com
 // @connect      github.com
 // @run-at       document-start
-// @updateURL    https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.js
-// @downloadURL  https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.js
+// @updateURL    https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.user.js
+// @downloadURL  https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.user.js
 // ==/UserScript==
 
 /*
@@ -2554,7 +2554,7 @@ function initAutoUpdate() {
         `;
         
         notification.querySelector('.update-btn').addEventListener('click', () => {
-            const url = downloadUrl || 'https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.js';
+            const url = downloadUrl || 'https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.user.js';
             GM_openInTab(url, { active: true });
         });
         
