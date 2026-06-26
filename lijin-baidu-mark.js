@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         样本标注系统增强工具
 // @namespace    http://tampermonkey.net/
-// @version      1.0.3
+// @version      1.0.4
 // @description  UI优化、多主题切换、十字参考线、右键拖动图片、实时时间、自动正方形框、快捷键修改、标签显示、自动更新
 // @author       lijin
 // @match        http://10.212.80.215:8901/sample/*
