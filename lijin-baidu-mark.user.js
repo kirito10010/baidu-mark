@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         样本标注系统增强工具
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.0.3
 // @description  UI优化、多主题切换、十字参考线、右键拖动图片、实时时间、自动正方形框、快捷键修改、标签显示、自动更新
 // @author       lijin
 // @match        http://10.212.80.215:8901/sample/*
@@ -58,6 +58,44 @@
 (function() {
     'use strict';
 
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 || 
+                  navigator.userAgent.toUpperCase().indexOf('MAC') >= 0;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    
+    let preferredPlatform = GM_getValue('preferredPlatform', 'auto');
+    if (preferredPlatform === 'auto') {
+        preferredPlatform = isIOS ? 'ios' : (isMac ? 'mac' : 'windows');
+    }
+    
+    const isMacPlatform = preferredPlatform === 'mac' || preferredPlatform === 'ios';
+    
+    function getModifierKeys() {
+        if (isMacPlatform) {
+            return {
+                ctrl: 'metaKey',
+                shift: 'shiftKey',
+                alt: 'ctrlKey',
+                combo: 'Command + Shift + Ctrl'
+            };
+        } else {
+            return {
+                ctrl: 'ctrlKey',
+                shift: 'shiftKey',
+                alt: 'altKey',
+                combo: 'Ctrl + Shift + Alt'
+            };
+        }
+    }
+    
+    const modifiers = getModifierKeys();
+    
+    function checkShortcut(e, key) {
+        const ctrl = e[modifiers.ctrl];
+        const shift = e[modifiers.shift];
+        const alt = e[modifiers.alt];
+        return ctrl && shift && alt && e.key.toLowerCase() === key;
+    }
+    
     const currentTheme = GM_getValue('theme', 'tech-blue');
     
     const themes = {
@@ -689,6 +727,35 @@
                 overflow-y: auto;
                 flex: 1;
             }
+            
+            .platform-selector {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .platform-label {
+                font-weight: 600;
+                color: #333;
+            }
+            
+            .platform-select {
+                padding: 6px 12px;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                font-size: 14px;
+                background: white;
+                cursor: pointer;
+            }
+            
+            .platform-hint {
+                font-size: 12px;
+                color: #666;
+                font-weight: 500;
+            }
 
             .shortcut-list {
                 display: flex;
@@ -955,7 +1022,7 @@
         }
 
         document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.altKey && e.key.toLowerCase() === 'p') {
+            if (checkShortcut(e, 'p')) {
                 e.preventDefault();
                 const activeElement = document.activeElement;
                 if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') {
@@ -1349,6 +1416,16 @@
                     <button class="shortcut-modal-close" id="shortcut-modal-close-btn">×</button>
                 </div>
                 <div class="shortcut-modal-body">
+                    <div class="platform-selector">
+                        <span class="platform-label">💻 平台选择：</span>
+                        <select id="platform-select" class="platform-select">
+                            <option value="auto" ${preferredPlatform === 'auto' ? 'selected' : ''}>自动检测</option>
+                            <option value="windows" ${preferredPlatform === 'windows' ? 'selected' : ''}>Windows</option>
+                            <option value="mac" ${preferredPlatform === 'mac' ? 'selected' : ''}>Mac</option>
+                            <option value="ios" ${preferredPlatform === 'ios' ? 'selected' : ''}>iOS</option>
+                        </select>
+                        <span class="platform-hint">当前: ${isMacPlatform ? 'Cmd+Shift+Ctrl' : 'Ctrl+Shift+Alt'}</span>
+                    </div>
                     <div class="shortcut-list" id="shortcut-list">
                     </div>
                 </div>
@@ -1369,11 +1446,19 @@
         const cancelBtn = modalOverlay.querySelector('#shortcut-cancel-btn');
         const saveBtn = modalOverlay.querySelector('#shortcut-save-btn');
         const resetBtn = modalOverlay.querySelector('#shortcut-reset-all-btn');
+        const platformSelect = modalOverlay.querySelector('#platform-select');
+        const platformHint = modalOverlay.querySelector('.platform-hint');
         
         closeBtn.addEventListener('click', closeShortcutModal);
         cancelBtn.addEventListener('click', closeShortcutModal);
-        saveBtn.addEventListener('click', saveAllShortcuts);
+        saveBtn.addEventListener('click', () => saveAllShortcuts(platformSelect.value));
         resetBtn.addEventListener('click', resetAllShortcuts);
+        
+        platformSelect.addEventListener('change', (e) => {
+            const selected = e.target.value;
+            const isMac = selected === 'mac' || selected === 'ios';
+            platformHint.textContent = `当前: ${isMac ? 'Cmd+Shift+Ctrl' : 'Ctrl+Shift+Alt'}`;
+        });
         
         modalOverlay.addEventListener('click', (e) => {
             if (e.target === modalOverlay) {
@@ -1478,7 +1563,7 @@
         modalOverlay.classList.add('active');
     }
 
-    function saveAllShortcuts() {
+    function saveAllShortcuts(platform = preferredPlatform) {
         const inputs = document.querySelectorAll('.shortcut-item-input');
         const newMapping = {};
         const conflicts = [];
@@ -1501,6 +1586,9 @@
         
         shortcutMapping = newMapping;
         GM_setValue('shortcutMapping', shortcutMapping);
+        
+        preferredPlatform = platform;
+        GM_setValue('preferredPlatform', platform);
         
         shortcutInterceptionEnabled = true;
         GM_setValue('shortcutInterceptionEnabled', true);
@@ -1600,7 +1688,7 @@
 
     function initShortcutEditor() {
         document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.altKey && e.key.toLowerCase() === 'k') {
+            if (checkShortcut(e, 'k')) {
                 e.preventDefault();
                 const activeElement = document.activeElement;
                 if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') {
@@ -2388,7 +2476,7 @@
 
     function initLabelDisplay() {
         document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.altKey && e.key.toLowerCase() === 'l') {
+            if (checkShortcut(e, 'l')) {
                 e.preventDefault();
                 
                 labelDisplayEnabled = !labelDisplayEnabled;
@@ -2463,12 +2551,13 @@
 
     console.log('✨ 样本标注系统增强工具已加载！');
     console.log('🎨 当前主题：', currentTheme, themes[currentTheme].name);
-    console.log('🎯 十字参考线：按 Ctrl+Shift+Alt+P 切换');
+    console.log('💻 当前平台：', isMacPlatform ? 'Mac/iOS (Cmd+Shift+Ctrl)' : 'Windows (Ctrl+Shift+Alt)');
+    console.log('🎯 十字参考线：按 ' + modifiers.combo + '+P 切换');
     console.log('🖱️ 右键拖动：右键拖动图片，按 C/X/A 键重置位置');
     console.log('📦 自动正方形：双击画框时自动创建100x100正方形');
-    console.log('⌨️ 快捷键设置：按 Ctrl+Shift+Alt+K 打开设置');
-    console.log('🏷️ 标签显示：按 Ctrl+Shift+Alt+L 切换');
-    console.log('🔄 检查更新：按 Ctrl+Shift+Alt+U 手动检查');
+    console.log('⌨️ 快捷键设置：按 ' + modifiers.combo + '+K 打开设置');
+    console.log('🏷️ 标签显示：按 ' + modifiers.combo + '+L 切换');
+    console.log('🔄 检查更新：按 ' + modifiers.combo + '+U 手动检查');
     
     initAutoUpdate();
 })();
@@ -2624,7 +2713,7 @@ function initAutoUpdate() {
     }
     
     document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.shiftKey && e.altKey && e.key.toLowerCase() === 'u') {
+        if (checkShortcut(e, 'u')) {
             e.preventDefault();
             checkForUpdates(true);
         }
