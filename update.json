@@ -1,5 +1,5 @@
 {
-    "version": "1.0.5",
+    "version": "1.0.6",
     "downloadUrl": "https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.user.js",
-    "changelog": "【修复】增删图中属性时后，标签列表立即刷新。"
+    "changelog": "【新增】新增或删除属性框标签列表实时显示"
 }
