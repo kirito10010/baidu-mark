@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         样本标注系统增强工具
 // @namespace    http://tampermonkey.net/
-// @version      1.0.3
+// @version      1.0.4
 // @description  UI优化、多主题切换、十字参考线、右键拖动图片、实时时间、自动正方形框、快捷键修改、标签显示、自动更新
 // @author       lijin
 // @match        http://10.212.80.215:8901/sample/*
@@ -2413,45 +2413,83 @@
         }
     }
 
+    let isRefreshing = false;
+    
+    function refreshLabels(picid, forceClearCache = false) {
+        if (!picid || isRefreshing) return;
+        
+        isRefreshing = true;
+        
+        if (forceClearCache) {
+            const cacheKey = `${LABELS_CACHE_KEY_PREFIX}${picid}`;
+            localStorage.removeItem(cacheKey);
+        }
+        
+        fetchLabels(picid);
+        
+        setTimeout(() => {
+            isRefreshing = false;
+        }, 1000);
+    }
+    
     function setupLabelMutationObserver() {
         const observer = new MutationObserver(function(mutations) {
             if (!labelDisplayEnabled) return;
             
-            const hasRelevantChanges = mutations.some(mutation => {
-                return mutation.target.closest('.gk-detail-pics') || 
-                       Array.from(mutation.addedNodes).some(node => node.closest && node.closest('.gk-detail-pics'));
+            let hasSvgChanges = false;
+            
+            mutations.forEach(mutation => {
+                if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+                    Array.from(mutation.addedNodes).forEach(node => {
+                        if (node.tagName === 'POLYGON' || node.tagName === 'circle' || 
+                            node.tagName === 'g' || node.tagName === 'rect') {
+                            hasSvgChanges = true;
+                        } else if (node.querySelector && (node.querySelector('polygon') || node.querySelector('circle'))) {
+                            hasSvgChanges = true;
+                        }
+                    });
+                }
+                
+                if (mutation.removedNodes && mutation.removedNodes.length > 0) {
+                    Array.from(mutation.removedNodes).forEach(node => {
+                        if (node.tagName === 'POLYGON' || node.tagName === 'circle' || 
+                            node.tagName === 'g' || node.tagName === 'rect') {
+                            hasSvgChanges = true;
+                        } else if (node.querySelector && (node.querySelector('polygon') || node.querySelector('circle'))) {
+                            hasSvgChanges = true;
+                        }
+                    });
+                }
             });
             
-            if (hasRelevantChanges) {
+            if (hasSvgChanges) {
                 if (labelMutationTimeout) {
                     clearTimeout(labelMutationTimeout);
                 }
                 
                 labelMutationTimeout = setTimeout(() => {
                     const picid = findPicid();
-                    if (picid && picid !== lastPicid) {
-                        lastPicid = picid;
-                        fetchLabels(picid);
+                    if (picid) {
+                        refreshLabels(picid, true);
                     }
-                }, 200);
+                }, 500);
             }
         });
         
-        const gkDetailPics = document.querySelector('.gk-detail-pics');
-        if (gkDetailPics) {
-            observer.observe(gkDetailPics, {
-                childList: true,
-                attributes: true,
-                attributeFilter: ['class']
-            });
-        } else {
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true,
-                attributes: true,
-                attributeFilter: ['class']
-            });
+        function observeSvg() {
+            const svg = document.querySelector('#j-svg') || document.querySelector('svg.main-svg');
+            if (svg) {
+                observer.observe(svg, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true
+                });
+            } else {
+                setTimeout(observeSvg, 500);
+            }
         }
+        
+        observeSvg();
     }
 
     function setupLiClickListeners() {
@@ -2466,8 +2504,14 @@
                 const span = li.querySelector('.fl');
                 if (span) {
                     const picid = span.textContent.trim();
-                    if (picid) {
-                        fetchLabels(picid);
+                    if (picid && picid !== lastPicid) {
+                        lastPicid = picid;
+                        if (labelMutationTimeout) {
+                            clearTimeout(labelMutationTimeout);
+                        }
+                        labelMutationTimeout = setTimeout(() => {
+                            refreshLabels(picid, false);
+                        }, 200);
                     }
                 }
             }

@@ -1,5 +1,5 @@
 {
-    "version": "1.0.3",
+    "version": "1.0.4",
     "downloadUrl": "https://raw.githubusercontent.com/kirito10010/baidu-mark/master/lijin-baidu-mark.user.js",
-    "changelog": "【新增】支持多平台快捷键（Windows/Mac/iOS），可在快捷键设置中选择平台"
+    "changelog": "【修复】新增、删除图中属性时后标签列表立即刷新，不再延迟显示"
 }
